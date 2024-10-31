@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .chat-header h2 {
+      margin: 0;
+    }
+
+    .chat-window {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+    }
+
+    .chat-message {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .user-message {
+      background-color: #eee;
+      text-align: right;
+    }
+
+    .ai-message {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+
+    .input-area {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .input-area input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .input-area button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="chat-header">
+      <h2>Gemini Chat</h2>
+      <button id="clear-button">Clear Chat</button>
+    </div>
+    <div class="chat-window" id="chat-window">
+      <!-- Chat messages will be added here -->
+    </div>
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button id="send-button">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chat-window');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    const clearButton = document.getElementById('clear-button');
+
+    // Replace with your Gemini API key
+    const API_KEY = 'AIzaSyASOKW8ttvI960qWdaHdtY-mgLAgx9INfc';
+
+    sendButton.addEventListener('click', sendMessage);
+    userInput.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    clearButton.addEventListener('click', clearChat);
+
+    function sendMessage() {
+      const message = userInput.value;
+      if (message.trim() !== '') {
+        // Display user message
+        displayMessage(message, 'user-message');
+
+        // Send message to Gemini API
+        fetch('AIzaSyASOKW8ttvI960qWdaHdtY-mgLAgx9INfc', { // Replace with your API endpoint
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_KEY}`
+          },
+          body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Display AI response
+          displayMessage(data.response, 'ai-message');
+        })
+        .catch(error => {
+          console.error('Error sending message:', error);
+          // Handle error appropriately (e.g., display an error message)
+        });
+
+        userInput.value = ''; // Clear input field
+      }
+    }
+
+    function displayMessage(message, messageClass) {
+      const chatMessage = document.createElement('div');
+      chatMessage.classList.add('chat-message', messageClass);
+      chatMessage.textContent = message;
+      chatWindow.appendChild(chatMessage);
+
+      // Scroll to bottom of chat window
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function clearChat() {
+      chatWindow.innerHTML = ''; // Clear chat messages
+    }
+  </script>
+</body>
+</html>
